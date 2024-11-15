@@ -1,0 +1,13 @@
+{
+    "server":["33185.hostkey.in"],
+    "mode":"tcp_and_udp",
+    "server_port":16348,
+    "password":"PASSWORD",
+    "timeout":86400,
+    "method":"chacha20-ietf-poly1305",
+    "local_address": "::",
+    "local_port": 1082,
+    "timeout": 300,
+    "fast_open": false,
+    "ipv6_first": true
+}
