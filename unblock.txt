@@ -9,6 +9,7 @@ bbc.com
 bbc.co.uk
 bbci.co.uk
 echofm.online
+medium.com
 ###Messangers
 discord.com
 discordapp.com
