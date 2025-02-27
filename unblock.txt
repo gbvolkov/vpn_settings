@@ -113,6 +113,7 @@ flutterflow.io
 firebase.google.com
 sendpulse.com
 spcdn.org
+serpapi.com
 ###Books
 lib.rus.ec
 flibusta.is
