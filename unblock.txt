@@ -114,6 +114,8 @@ firebase.google.com
 sendpulse.com
 spcdn.org
 serpapi.com
+app.phoenix.arize.com
+llamatrace.com
 ###Books
 lib.rus.ec
 flibusta.is
