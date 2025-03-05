@@ -116,6 +116,7 @@ spcdn.org
 serpapi.com
 app.phoenix.arize.com
 llamatrace.com
+arize.com
 ###Books
 lib.rus.ec
 flibusta.is
