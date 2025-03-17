@@ -367,3 +367,5 @@ ghcr.io
 github.community
 ###elastic
 elastic.co
+###Services
+notion.so
