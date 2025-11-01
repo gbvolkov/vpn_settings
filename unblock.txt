@@ -118,6 +118,7 @@ app.phoenix.arize.com
 llamatrace.com
 arize.com
 app.phoenix.arize.com
+redis.io
 ###Books
 lib.rus.ec
 flibusta.is
@@ -184,6 +185,12 @@ patreon.com
 canva.com
 ###Job platforms
 naukri.com
+###AppleTV
+tv.apple.com
+hls-svod.itunes.apple.com
+hls-svod-aoc-ve.itunes.g.aaplimg.com
+hls-svod-ve.itunes.g.aaplimg.com
+tv.g.apple.com
 ###YouTube
 ggpht.com
 googlevideo.com
