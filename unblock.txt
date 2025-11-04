@@ -47,6 +47,7 @@ pushnotifs.com
 mixer.com
 twitter.com
 linkedin.com
+deepl.com
 ###Facebook
 facebook.com
 fbcdn.com
