@@ -120,6 +120,7 @@ llamatrace.com
 arize.com
 app.phoenix.arize.com
 redis.io
+scrum.org
 ###Books
 lib.rus.ec
 flibusta.is
