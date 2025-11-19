@@ -107,6 +107,7 @@ oaistatic.com
 oaiusercontent.com
 chatgpt.com
 claude.ai
+anthropic.com
 copilot.microsoft.com
 syncfusion.com
 algolia.com
