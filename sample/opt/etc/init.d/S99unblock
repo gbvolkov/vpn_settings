@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# This init script populates the unblock ipset on startup.
+[ "$1" != "start" ] && exit 0
+
+/opt/bin/unblock_ipset.sh &
+
+exit 0

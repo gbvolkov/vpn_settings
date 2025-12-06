@@ -1,0 +1,42 @@
+{
+  "outbounds": [
+    {
+      "tag": "GVPN_vless-zoo-gate",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "5.61.36.241",
+            "port": 443,
+            "users": [
+              {
+                "id": "0fa031dc-1304-4895-b5a1-b7e8f5e5b556",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "xhttpSettings": {
+          "path": "/",
+          "host": "",
+          "mode": "auto"
+        },
+        "security": "reality",
+        "realitySettings": {
+          "publicKey": "1qNPz5uNbVjx_4jZGviCRKzhgZCG5Nci4OVAcQ62eAg",
+          "fingerprint": "chrome",
+          "serverName": "indianexpress.com",
+          "shortId": "6789c8ec",
+          "spiderX": "/"
+        }
+      }
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    }
+  ]
+}

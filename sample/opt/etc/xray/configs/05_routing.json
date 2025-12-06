@@ -1,0 +1,14 @@
+{
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "redirect"
+        ],
+        "outboundTag": "GVPN_vless-zoo-gate"
+      }
+    ]
+  }
+}

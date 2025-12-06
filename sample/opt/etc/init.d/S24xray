@@ -1,0 +1,15 @@
+#!/bin/sh
+
+ENABLED=yes
+PROCS=xray
+ARGS="run -confdir /opt/etc/xray/configs"
+PREARGS=""
+DESC=$PROCS
+PATH=/opt/sbin:/opt/bin:/opt/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+[ -z "$(which $PROCS)" ] && exit 0
+
+# Ensure RAM log directory exists
+[ -d /tmp/xray ] || mkdir -p /tmp/xray
+
+. /opt/etc/init.d/rc.func
