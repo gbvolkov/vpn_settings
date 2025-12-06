@@ -379,3 +379,16 @@ github.community
 elastic.co
 ###Services
 notion.so
+###whatsapp
+whatsapp.net
+whatsapp.com
+wa.me
+wl.co
+whatsappbrand.com
+whatsapp.cc
+whatsapp-plus.info
+whatsapp-plus.me
+whatsapp-plus.net
+whatsapp.org
+whatsapp.tv
+whatsapp.info
