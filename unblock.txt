@@ -188,6 +188,7 @@ patreon.com
 canva.com
 ###Job platforms
 naukri.com
+hootsuite.com
 ###AppleTV
 tv.apple.com
 hls-svod.itunes.apple.com
