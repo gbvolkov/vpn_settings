@@ -122,6 +122,8 @@ arize.com
 app.phoenix.arize.com
 redis.io
 scrum.org
+###Network utilities
+dyn.com
 ###Books
 lib.rus.ec
 flibusta.is
