@@ -164,6 +164,13 @@ nflximg.com
 nflximg.net
 nflxso.net
 nflxvideo.net
+##JWP Media Player
+jwpcdn.com
+jwplatform.com
+jwplayer.com
+jwpltx.com
+jwpsrv.com
+longtailvideo.com
 ###EMail
 proton.me
 gmx.de
