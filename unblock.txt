@@ -106,8 +106,11 @@ openai.com
 oaistatic.com
 oaiusercontent.com
 chatgpt.com
-claude.ai
 anthropic.com
+claude.ai
+claude.com
+claudeusercontent.com
+claudemcpclient.com
 copilot.microsoft.com
 syncfusion.com
 algolia.com
