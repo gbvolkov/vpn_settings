@@ -183,6 +183,7 @@ claude.ai
 claude.com
 claudeusercontent.com
 claudemcpclient.com
+sj-cdn.net
 copilot.microsoft.com
 syncfusion.com
 algolia.com
