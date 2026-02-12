@@ -197,6 +197,7 @@ arize.com
 app.phoenix.arize.com
 redis.io
 scrum.org
+nanabanana.io
 ###Network utilities
 dyn.com
 ###Books
