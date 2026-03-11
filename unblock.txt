@@ -11,7 +11,7 @@ bbci.co.uk
 echofm.online
 medium.com
 ###Messagers
-# Core
+#Discord
 dis.gd
 discord.co
 discord.com
@@ -40,6 +40,18 @@ discordapp.io
 discordcdn.com
 discord-attachments-uploads-prd.storage.googleapis.com
 hammerandchisel.ssl.zendesk.com
+#Slack
+slack-core.com
+slack-edge.com
+slack-files.com
+slack-imgs.com
+slack-msgs.com
+slack-redir.net
+slack.com
+slackb.com
+slackcertified.com
+slackdemo.com
+slackhq.com
 ###AI
 ###Agentic platforms
 confident-ai.com
