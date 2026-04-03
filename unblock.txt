@@ -102,6 +102,24 @@ usercontent.dev
 149.154.160.0/20
 91.108.4.0/22
 91.108.56.0/22
+# BEGIN TELEGRAM_AUTO
+# generated_utc=2026-04-03 22:28:19Z
+# total_ipv4=10
+# cdn_ipv4=0
+# media_only_ipv4=4
+# tcpo_only_ipv4=0
+# source=Telegram MTProto help.getConfig.dc_options (IPv4 only)
+91.108.56.133
+149.154.167.35
+149.154.167.41
+149.154.167.51
+149.154.167.92
+149.154.167.255
+149.154.171.255
+149.154.175.53
+149.154.175.100
+149.154.175.211
+# END TELEGRAM_AUTO
 ###Others
 2ip.ru
 ###Instagram
