@@ -825,12 +825,12 @@ aisandbox-pa.googleapis.com
 stitch.withgoogle.com
 robinfrontend-pa.googleapis.com
 ###NVidia
-geforce.cn @cn
+geforce.cn
 geforce.co.kr
 geforce.co.uk
 geforce.com
 geforce.com.tw
-gputechconf.cn @cn
+gputechconf.cn
 gputechconf.co.kr
 gputechconf.com
 gputechconf.com.au
@@ -842,7 +842,7 @@ nvidia.asia
 nvidia.at
 nvidia.be
 nvidia.ch
-nvidia.cn @cn
+nvidia.cn
 nvidia.co.at
 nvidia.co.in
 nvidia.co.jp
@@ -886,7 +886,7 @@ tegrazone.com
 tegrazone.jp
 tegrazone.kr
 nvidia.tt.omtrdc.net
-cn.download.nvidia.com @cn
+cn.download.nvidia.com
 ###Development
 ragflow.io
 play.google.com
