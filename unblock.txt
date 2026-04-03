@@ -99,6 +99,8 @@ tg.dev
 ton.org
 tx.me
 usercontent.dev
+149.154.160.0/20
+91.108.4.0/22
 ###Others
 2ip.ru
 ###Instagram

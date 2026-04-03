@@ -349,7 +349,7 @@ EOF
       "port": 61219,
       "protocol": "dokodemo-door",
       "settings": {
-        "network": "tcp",
+        "network": "tcp,udp",
         "followRedirect": true
       },
       "sniffing": {
