@@ -1225,20 +1225,28 @@ elastic.co
 ###Services
 notion.so
 # BEGIN TELEGRAM_AUTO
-# generated_utc=2026-04-04 08:14:28Z
-# total_ipv4=10
-# cdn_ipv4=0
-# media_only_ipv4=4
-# tcpo_only_ipv4=0
-# source=Telegram MTProto help.getConfig.dc_options (IPv4 only)
-91.108.56.133
-149.154.167.35
-149.154.167.41
-149.154.167.51
-149.154.167.92
-149.154.167.255
-149.154.171.255
-149.154.175.53
-149.154.175.100
-149.154.175.211
+# generated_utc=2026-04-04 09:30:20Z
+# total_ipv4_networks=10
+# official_ipv4_cidrs=9
+# ripe_as_sets=AS-TELEGRAM,AS211157:AS-TELEGRAM-CDN
+# ripe_asns=AS59930,AS62014,AS62041,AS211157
+# ripe_asn_ipv4_cidrs=17
+# ripe_asn_additional_ipv4_cidrs=1
+# mtproto_status=included
+# mtproto_ipv4_endpoints=10
+# mtproto_uncovered_ipv4=0
+# source_official=https://core.telegram.org/resources/cidr.txt
+# source_ripe_as_set=https://rest.db.ripe.net/ripe/as-set/<AS-SET>.json
+# source_ripe_stat=https://stat.ripe.net/data/announced-prefixes/data.json?resource=<ASN>
+# source_mtproto=Telegram MTProto help.getConfig.dc_options (optional, /32 only if uncovered)
+91.105.192.0/23
+91.108.4.0/22
+91.108.8.0/22
+91.108.12.0/22
+91.108.16.0/22
+91.108.20.0/22
+91.108.56.0/22
+95.161.64.0/20
+149.154.160.0/20
+185.76.151.0/24
 # END TELEGRAM_AUTO
