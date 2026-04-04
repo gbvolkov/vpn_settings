@@ -122,6 +122,10 @@ usercontent.dev
 # END TELEGRAM_AUTO
 ###Others
 2ip.ru
+crazygames.com
+cookappsgames.com
+panda-platforma.berlin
+free-scores.com
 ###Instagram
 achat-followers-instagram.com
 acheter-followers-instagram.com
@@ -906,6 +910,11 @@ tegrazone.kr
 nvidia.tt.omtrdc.net
 cn.download.nvidia.com
 ###Development
+lobehub.com
+pulsemcp.com
+langchain.com
+gitguardian.com
+dadroit.com
 ragflow.io
 play.google.com
 mongodb.com
