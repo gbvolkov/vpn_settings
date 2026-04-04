@@ -514,17 +514,46 @@ generate_redirect_script() {
 #!/bin/sh
 [ "\$type" = "ip6tables" ] && exit 0
 
-if [ -z "\$(iptables-save 2>/dev/null | grep 'unblock')" ]; then
-    ipset create unblock hash:net -exist
-    iptables -I PREROUTING -w -t nat -i br0 -p tcp -m set --match-set unblock dst -j REDIRECT --to-port 61219
-    iptables -I PREROUTING -w -t nat -i br0 -p udp -m set --match-set unblock dst -j REDIRECT --to-port 61219
-fi
-if [ -z "\$(iptables-save 2>/dev/null | grep 'udp --dport 53 -j DNAT')" ]; then
-    iptables -w -t nat -I PREROUTING -i br0 -p udp --dport 53 -j DNAT --to $ROUTER_IP
-fi
-if [ -z "\$(iptables-save 2>/dev/null | grep 'tcp --dport 53 -j DNAT')" ]; then
-    iptables -w -t nat -I PREROUTING -i br0 -p tcp --dport 53 -j DNAT --to $ROUTER_IP
-fi
+ipset create unblock hash:net -exist
+
+add_rule() {
+    check="\$1"
+    shift
+    if ! iptables-save -t nat 2>/dev/null | grep -F -q -- "\$check"; then
+        iptables -w -t nat -I PREROUTING "\$@"
+    fi
+}
+
+# LAN br0
+add_rule '-A PREROUTING -i br0 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
+    -i br0 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
+add_rule '-A PREROUTING -i br0 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
+    -i br0 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
+
+# LAN br1
+add_rule '-A PREROUTING -i br1 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
+    -i br1 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
+add_rule '-A PREROUTING -i br1 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
+    -i br1 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
+
+# SSTP pool
+add_rule '-A PREROUTING -s 172.16.3.0/24 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
+    -s 172.16.3.0/24 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
+add_rule '-A PREROUTING -s 172.16.3.0/24 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
+    -s 172.16.3.0/24 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
+
+# DNS interception for LAN br0
+add_rule '-A PREROUTING -i br0 -p udp -m udp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
+    -i br0 -p udp --dport 53 -j DNAT --to-destination $ROUTER_IP
+add_rule '-A PREROUTING -i br0 -p tcp -m tcp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
+    -i br0 -p tcp --dport 53 -j DNAT --to-destination $ROUTER_IP
+
+# DNS interception for SSTP pool
+add_rule '-A PREROUTING -s 172.16.3.0/24 -p udp -m udp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
+    -s 172.16.3.0/24 -p udp --dport 53 -j DNAT --to-destination $ROUTER_IP
+add_rule '-A PREROUTING -s 172.16.3.0/24 -p tcp -m tcp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
+    -s 172.16.3.0/24 -p tcp --dport 53 -j DNAT --to-destination $ROUTER_IP
+
 exit 0
 EOF
     chmod +x "$REDIRECT_SCRIPT"
