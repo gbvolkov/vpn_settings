@@ -929,6 +929,17 @@ app.phoenix.arize.com
 redis.io
 scrum.org
 nanabanana.io
+###Microsoft Store
+storeedgefd.dsx.mp.microsoft.com
+livetileedge.dsx.mp.microsoft.com
+displaycatalog.mp.microsoft.com
+storesdk.dsx.mp.microsoft.com
+store-images.s-microsoft.com
+img-prod-cms-rt-microsoft-com.akamaized.net
+wns.windows.com
+storecatalogrevocation.storequality.microsoft.com
+#login.live.com
+#licensing.mp.microsoft.com
 ###Meta
 llama.com
 meta.ai
