@@ -896,6 +896,7 @@ tegrazone.kr
 nvidia.tt.omtrdc.net
 cn.download.nvidia.com
 ###Development
+godotengine.org
 lobehub.com
 pulsemcp.com
 langchain.com
