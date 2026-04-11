@@ -897,6 +897,7 @@ nvidia.tt.omtrdc.net
 cn.download.nvidia.com
 ###Development
 godotengine.org
+your-objectstorage.com
 lobehub.com
 pulsemcp.com
 langchain.com
