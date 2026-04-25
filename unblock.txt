@@ -110,6 +110,8 @@ nhtsa.dot.gov
 olyport.com
 2ip.ru
 crazygames.com
+cloudfront.net
+amazonaws.com
 cookappsgames.com
 panda-platforma.berlin
 free-scores.com
