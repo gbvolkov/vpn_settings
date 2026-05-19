@@ -1,3 +1,9 @@
+###Adobe Creative Cloud
+adobecc.com
+adobecce.com
+adobeccstatic.com
+creativecloud.com
+creativesdk.com
 ###Speedtest
 cdnst.net
 cellmaps.com
@@ -125,8 +131,8 @@ olyport.com
 2ip.ru
 crazygames.com
 cloudfront.net
-amazonaws.com
 cookappsgames.com
+amazonaws.com
 panda-platforma.berlin
 free-scores.com
 ###Instagram
@@ -913,6 +919,7 @@ tegrazone.kr
 nvidia.tt.omtrdc.net
 cn.download.nvidia.com
 ###Development
+youtrack.cloud
 godotengine.org
 your-objectstorage.com
 lobehub.com
