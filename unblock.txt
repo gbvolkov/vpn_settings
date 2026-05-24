@@ -931,6 +931,7 @@ dadroit.com
 ragflow.io
 play.google.com
 mongodb.com
+deepseek.com
 open.ai
 openai.com
 oaistatic.com
