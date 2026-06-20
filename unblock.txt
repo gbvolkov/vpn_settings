@@ -928,6 +928,8 @@ tegrazone.kr
 nvidia.tt.omtrdc.net
 cn.download.nvidia.com
 ###Development
+opendatastructures.org
+usaco.guide
 youtrack.cloud
 runpod.io
 godotengine.org
