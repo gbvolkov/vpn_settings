@@ -1,3 +1,5 @@
+###HOSTING
+ishosting.io
 ###Adobe Creative Cloud
 adobecc.com
 adobecce.com
@@ -1279,12 +1281,12 @@ elastic.co
 ###Services
 notion.so
 # BEGIN TELEGRAM_AUTO
-# generated_utc=2026-05-21 09:35:58Z
+# generated_utc=2026-07-12 08:30:41Z
 # total_ipv4_networks=10
 # official_ipv4_cidrs=9
 # ripe_as_sets=AS-TELEGRAM,AS211157:AS-TELEGRAM-CDN
 # ripe_asns=AS59930,AS62014,AS62041,AS211157
-# ripe_asn_ipv4_cidrs=17
+# ripe_asn_ipv4_cidrs=35
 # ripe_asn_additional_ipv4_cidrs=1
 # mtproto_status=included
 # mtproto_ipv4_endpoints=10
