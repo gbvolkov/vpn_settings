@@ -1,47 +1,58 @@
 #!/bin/sh
 
-set -e
+# Update the runtime unblock list and helper scripts from the Git repository.
 
-# Ensure Git is in PATH (Entware usually installs it into /opt/bin)
-/opt/bin/git --version >/dev/null 2>&1 || {
-    echo "[ERR] git not found at /opt/bin/git. Install it with: opkg install git"
-    exit 1
+PATH=/opt/sbin:/opt/bin:/opt/usr/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+REPO_URL="https://github.com/gbvolkov/vpn_settings.git"
+TMP_DIR="/tmp/vpn_settings_update.$$"
+REPO_DIR="$TMP_DIR/repo"
+
+log() { echo "[*] $*"; }
+ok() { echo "[OK] $*"; }
+fail() { echo "[ERR] $*" >&2; exit 1; }
+
+cleanup() {
+    rm -rf "$TMP_DIR"
+}
+trap cleanup 0
+trap 'exit 1' HUP INT TERM
+
+[ -x /opt/bin/git ] || fail "git is missing. Install it with: opkg install git"
+[ -x /opt/lib/git-core/git-remote-https ] || fail "Git HTTPS helper is missing. Install it with: opkg install git-http"
+
+cleanup
+mkdir -p "$TMP_DIR" || fail "Cannot create $TMP_DIR"
+
+log "Cloning $REPO_URL (shallow clone)..."
+/opt/bin/git clone --depth 1 --single-branch "$REPO_URL" "$REPO_DIR" || fail "Repository clone failed"
+
+for name in unblock.txt unblock_dnsmasq.sh unblock_ipset.sh unblock_update.sh update.sh; do
+    [ -f "$REPO_DIR/$name" ] || fail "$name is missing in the repository"
+done
+
+install_file() {
+    src="$1"
+    dst="$2"
+    mode="$3"
+    tmp="$dst.new.$$"
+
+    cp "$src" "$tmp" || fail "Cannot copy $src to $tmp"
+    chmod "$mode" "$tmp" || fail "Cannot chmod $tmp"
+    mv -f "$tmp" "$dst" || fail "Cannot replace $dst"
+    ok "Updated $dst"
 }
 
-TMP_DIR="/tmp/vpn_settings.$$"
-REPO_URL="https://github.com/gbvolkov/vpn_settings.git"
-UNBLOCK_DST="/opt/etc/unblock.txt"
-UNBLOCK_UPDATE="/opt/bin/unblock_update.sh"
+mkdir -p /opt/bin /opt/etc || fail "Cannot create /opt/bin or /opt/etc"
 
-echo "[*] Cloning repository: $REPO_URL"
-rm -rf "$TMP_DIR"
-mkdir -p "$TMP_DIR"
+install_file "$REPO_DIR/unblock_dnsmasq.sh" /opt/bin/unblock_dnsmasq.sh 755
+install_file "$REPO_DIR/unblock_ipset.sh" /opt/bin/unblock_ipset.sh 755
+install_file "$REPO_DIR/unblock_update.sh" /opt/bin/unblock_update.sh 755
+install_file "$REPO_DIR/update.sh" /opt/bin/vpn_settings_update.sh 755
+install_file "$REPO_DIR/unblock.txt" /opt/etc/unblock.txt 644
 
-# Clone into temporary directory
-/opt/bin/git clone "$REPO_URL" "$TMP_DIR/repo"
+log "Rebuilding dnsmasq rules and ipset..."
+/opt/bin/unblock_update.sh || fail "unblock update failed"
 
-echo "[*] Updating $UNBLOCK_DST from repo unblock.txt"
-if [ ! -f "$TMP_DIR/repo/unblock.txt" ]; then
-    echo "[ERR] unblock.txt not found in cloned repo."
-    rm -rf "$TMP_DIR"
-    exit 1
-fi
-
-mkdir -p "$(dirname "$UNBLOCK_DST")"
-cp "$TMP_DIR/repo/unblock.txt" "$UNBLOCK_DST"
-
-echo "[*] Running unblock_update.sh..."
-if [ -x "$UNBLOCK_UPDATE" ]; then
-    "$UNBLOCK_UPDATE"
-else
-    echo "[ERR] $UNBLOCK_UPDATE not found or not executable."
-    rm -rf "$TMP_DIR"
-    exit 1
-fi
-
-echo "[*] Cleaning temporary files..."
-rm -rf "$TMP_DIR"
-
-echo "[OK] unblock.txt updated and unblock_update.sh executed."
+ok "VPN settings update completed."
 exit 0
-

@@ -1,15 +1,22 @@
 #!/bin/sh
 
-# Flush existing ipset, rebuild dnsmasq rules, restart dnsmasq, and repopulate ipset.
-ipset flush unblock
+# Rebuild dnsmasq rules, reload dnsmasq and repopulate ipset.
 
-# Generate /opt/etc/unblock.dnsmasq from unblock.txt
-/opt/bin/unblock_dnsmasq.sh
+PATH=/opt/sbin:/opt/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Restart dnsmasq to reload new rules
-/opt/etc/init.d/S56dnsmasq restart
+echo "[*] Generating dnsmasq unblock rules..."
+/opt/bin/unblock_dnsmasq.sh || exit 1
 
-# Populate ipset in the background
-/opt/bin/unblock_ipset.sh &
+echo "[*] Validating dnsmasq configuration..."
+/opt/sbin/dnsmasq --test -C /opt/etc/dnsmasq.conf || exit 1
 
+echo "[*] Restarting dnsmasq..."
+/opt/etc/init.d/S56dnsmasq restart || exit 1
+
+# Run in the foreground so SSH receives progress output. S99unblock starts this
+# helper itself in the background during boot.
+echo "[*] Populating ipset..."
+/opt/bin/unblock_ipset.sh || exit 1
+
+echo "[OK] Unblock configuration updated."
 exit 0

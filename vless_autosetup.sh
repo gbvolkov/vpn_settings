@@ -1,6 +1,7 @@
 #!/bin/sh
-# Universal VLESS+XRay+dnsmasq/ipset setup for Keenetic (Entware)
-# One-button style: backup, generate, test, rollback on failure.
+# VLESS + Xray + dnsmasq/ipset setup for Keenetic (Entware).
+# Tested with KeeneticOS 5.0.12 and Entware mipselsf-k3.4.
+# Generates, validates and installs the complete runtime configuration.
 
 ###############################################################################
 # Constants and paths
@@ -30,8 +31,10 @@ UNBLOCK_TXT="/opt/etc/unblock.txt"
 UNBLOCK_UPDATE="/opt/bin/unblock_update.sh"
 UNBLOCK_DNSMASQ_SH="/opt/bin/unblock_dnsmasq.sh"
 UNBLOCK_IPSET_SH="/opt/bin/unblock_ipset.sh"
+VPN_SETTINGS_UPDATE="/opt/bin/vpn_settings_update.sh"
 
-BACKUP_ROOT="/opt/vless_autosetup_backup_$(date +%Y%m%d-%H%M%S)"
+# Rollback data is temporary and must not consume the small persistent /opt.
+BACKUP_ROOT="/tmp/vless_autosetup_backup_$(date +%Y%m%d-%H%M%S)"
 TOUCHED_FILES=""
 
 # Directory where we keep copies of generated configs for inspection
@@ -150,11 +153,15 @@ install_required_packages() {
     log "Updating opkg package lists..."
     opkg update || fail "opkg update failed"
 
-    # Minimal set for this scheme
+    # Complete set used by the runtime configuration and update.sh.
     PKGS="
 xray-core
 dnsmasq-full
 bind-dig
+ipset
+iptables
+git
+git-http
 "
     for p in $PKGS; do
         ensure_pkg "$p"
@@ -225,6 +232,7 @@ parse_vless_conf() {
     VLESS_FP="$(get_q_param fp)"
     VLESS_SNI="$(get_q_param sni)"
     VLESS_SID="$(get_q_param sid)"
+    VLESS_PQV="$(get_q_param pqv)"
     VLESS_SPX_RAW="$(get_q_param spx)"
 
     VLESS_PATH="$(urldecode_simple "$VLESS_PATH_RAW")"
@@ -233,9 +241,21 @@ parse_vless_conf() {
     [ -z "$VLESS_TYPE" ] && VLESS_TYPE="tcp"
     [ -z "$VLESS_ENC" ] && VLESS_ENC="none"
 
+    [ -n "$VLESS_UUID" ] || fail "VLESS UUID is missing"
+    [ -n "$VLESS_HOST" ] || fail "VLESS host is missing"
+    case "$VLESS_PORT" in
+        ''|*[!0-9]*) fail "VLESS port is missing or invalid" ;;
+    esac
+    [ "$VLESS_TYPE" = "xhttp" ] || fail "Only VLESS type=xhttp is supported by this configuration"
+    [ "$VLESS_SEC" = "reality" ] || fail "Only VLESS security=reality is supported by this configuration"
+    [ -n "$VLESS_PBK" ] || fail "VLESS pbk is missing"
+    [ -n "$VLESS_SNI" ] || fail "VLESS sni is missing"
+    [ -n "$VLESS_SID" ] || fail "VLESS sid is missing"
+    [ -n "$VLESS_PQV" ] || fail "VLESS pqv is missing"
+
     log_ok "Parsed VLESS:"
     log "  TAG         = $VLESS_TAG"
-    log "  UUID        = $VLESS_UUID"
+    log "  UUID        = [REDACTED]"
     log "  HOST        = $VLESS_HOST"
     log "  PORT        = $VLESS_PORT"
     log "  TYPE        = $VLESS_TYPE"
@@ -244,10 +264,11 @@ parse_vless_conf() {
     log "  HOST HEADER = $VLESS_HOSTHDR"
     log "  MODE        = $VLESS_MODE"
     log "  SECURITY    = $VLESS_SEC"
-    log "  PBK         = $VLESS_PBK"
+    log "  PBK         = [REDACTED]"
     log "  FP          = $VLESS_FP"
     log "  SNI         = $VLESS_SNI"
-    log "  SID         = $VLESS_SID"
+    log "  SID         = [REDACTED]"
+    log "  PQV         = [REDACTED]"
     log "  SPX         = $VLESS_SPX"
 }
 
@@ -328,8 +349,8 @@ generate_xray_configs() {
 {
   "log": {
     "access": "none",
-    "error": "/tmp/xray/error.log",
-    "loglevel": "error",
+    "error": "none",
+    "loglevel": "none",
     "dnsLog": false
   }
 }
@@ -399,10 +420,11 @@ EOF
         },
         "security": "$VLESS_SEC",
         "realitySettings": {
-          "publicKey": "$VLESS_PBK",
+          "password": "$VLESS_PBK",
           "fingerprint": "$VLESS_FP",
           "serverName": "$VLESS_SNI",
           "shortId": "$VLESS_SID",
+          "mldsa65Verify": "$VLESS_PQV",
           "spiderX": "$VLESS_SPX"
         }
       }
@@ -455,6 +477,41 @@ EOF
 EOF
     log_ok "Written $f"
     copy_to_gen "$f" "xray/06_policy.json"
+}
+
+install_unblock_files() {
+    local src dst
+
+    mkdir -p /opt/bin /opt/etc || fail "Cannot create /opt/bin or /opt/etc"
+
+    for src in \
+        "$BASE_DIR/unblock_dnsmasq.sh" \
+        "$BASE_DIR/unblock_ipset.sh" \
+        "$BASE_DIR/unblock_update.sh"
+    do
+        [ -f "$src" ] || fail "Required helper not found: $src"
+        dst="/opt/bin/$(basename "$src")"
+        backup_file "$dst" || fail "Backup failed for $dst"
+        cp "$src" "$dst" || fail "Failed to install $dst"
+        chmod 755 "$dst" || fail "Failed to chmod $dst"
+        log_ok "Installed $dst"
+    done
+
+    src="$BASE_DIR/update.sh"
+    dst="$VPN_SETTINGS_UPDATE"
+    [ -f "$src" ] || fail "Required updater not found: $src"
+    backup_file "$dst" || fail "Backup failed for $dst"
+    cp "$src" "$dst" || fail "Failed to install $dst"
+    chmod 755 "$dst" || fail "Failed to chmod $dst"
+    log_ok "Installed $dst"
+
+    src="$BASE_DIR/unblock.txt"
+    dst="$UNBLOCK_TXT"
+    [ -f "$src" ] || fail "Required list not found: $src"
+    backup_file "$dst" || fail "Backup failed for $dst"
+    cp "$src" "$dst" || fail "Failed to install $dst"
+    chmod 644 "$dst" || fail "Failed to chmod $dst"
+    log_ok "Installed $dst"
 }
 
 generate_dnsmasq_conf() {
@@ -512,6 +569,7 @@ generate_redirect_script() {
 
     cat > "$REDIRECT_SCRIPT" <<EOF
 #!/bin/sh
+PATH=/opt/sbin:/opt/bin:/usr/sbin:/usr/bin:/sbin:/bin
 [ "\$type" = "ip6tables" ] && exit 0
 
 ipset create unblock hash:net -exist
@@ -524,31 +582,31 @@ add_rule() {
     fi
 }
 
-# LAN br0
+# Main LAN (br0)
 add_rule '-A PREROUTING -i br0 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
     -i br0 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
 add_rule '-A PREROUTING -i br0 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
     -i br0 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
 
-# LAN br1
+# Additional LAN (br1)
 add_rule '-A PREROUTING -i br1 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
     -i br1 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
 add_rule '-A PREROUTING -i br1 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
     -i br1 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
 
-# SSTP pool
+# SSTP client pool
 add_rule '-A PREROUTING -s 172.16.3.0/24 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
     -s 172.16.3.0/24 -p tcp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
 add_rule '-A PREROUTING -s 172.16.3.0/24 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219' \
     -s 172.16.3.0/24 -p udp -m set --match-set unblock dst -j REDIRECT --to-ports 61219
 
-# DNS interception for LAN br0
+# Force DNS from br0 through the Entware dnsmasq instance.
 add_rule '-A PREROUTING -i br0 -p udp -m udp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
     -i br0 -p udp --dport 53 -j DNAT --to-destination $ROUTER_IP
 add_rule '-A PREROUTING -i br0 -p tcp -m tcp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
     -i br0 -p tcp --dport 53 -j DNAT --to-destination $ROUTER_IP
 
-# DNS interception for SSTP pool
+# Force DNS from the SSTP pool through the Entware dnsmasq instance.
 add_rule '-A PREROUTING -s 172.16.3.0/24 -p udp -m udp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
     -s 172.16.3.0/24 -p udp --dport 53 -j DNAT --to-destination $ROUTER_IP
 add_rule '-A PREROUTING -s 172.16.3.0/24 -p tcp -m tcp --dport 53 -j DNAT --to-destination $ROUTER_IP' \
@@ -577,9 +635,6 @@ DESC=$PROCS
 PATH=/opt/sbin:/opt/bin:/opt/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 [ -z "$(which $PROCS)" ] && exit 0
-
-# Ensure RAM log directory exists
-[ -d /tmp/xray ] || mkdir -p /tmp/xray
 
 . /opt/etc/init.d/rc.func
 EOF
@@ -627,14 +682,14 @@ run_checks() {
     # XRay config test
     log "Testing XRay config..."
 
-    # For the test run, the init script S24xray is not used,
-    # so we must ensure that the log directory exists.
-    [ -d /tmp/xray ] || mkdir -p /tmp/xray
-
     "$XRAY_BIN" run -test -confdir "$XRAY_CONF_DIR"
     [ $? -eq 0 ] || fail "XRay config test failed"
 
     log_ok "XRay config OK."
+
+    log "Testing dnsmasq config..."
+    /opt/sbin/dnsmasq --test -C "$DNSMASQ_CONF" || fail "dnsmasq config test failed"
+    log_ok "dnsmasq config OK."
 
     # Optional DNS check. It depends on external connectivity,
     # so it is non-fatal and only prints a warning on failure.
@@ -654,18 +709,23 @@ run_checks() {
 
 restart_services() {
     log "Restarting dnsmasq..."
-    "$INIT_DNSMASQ" restart || fail "Failed to restart dnsmasq"
+    "$INIT_DNSMASQ" restart || fail "Failed to restart dnsmasq. Enable 'opkg dns-override' in Keenetic CLI, save the configuration, then run this script again."
 
     log "Restarting XRay..."
     "$INIT_XRAY" restart || fail "Failed to restart XRay"
+    rm -f /tmp/xray/error.log
+    rmdir /tmp/xray 2>/dev/null || true
+
+    log "Applying netfilter redirect rules..."
+    type=iptables "$REDIRECT_SCRIPT" || fail "Failed to apply redirect rules"
 
     # Update ipset (if helper scripts exist)
     if [ -x "$UNBLOCK_UPDATE" ]; then
         log "Running unblock_update.sh..."
-        "$UNBLOCK_UPDATE"
+        "$UNBLOCK_UPDATE" || fail "unblock_update.sh failed"
     elif [ -x "$UNBLOCK_IPSET_SH" ]; then
         log "Running unblock_ipset.sh..."
-        "$UNBLOCK_IPSET_SH" &
+        "$UNBLOCK_IPSET_SH" || fail "unblock_ipset.sh failed"
     fi
 
     log_ok "Services restarted."
@@ -686,6 +746,7 @@ detect_router_ip
 load_dns_list
 
 generate_xray_configs
+install_unblock_files
 generate_dnsmasq_conf
 ensure_unblock_dnsmasq
 generate_redirect_script
@@ -700,4 +761,3 @@ log_ok "=== VLESS/XRay autosetup completed successfully ==="
 log "Backup of previous config files stored at: $BACKUP_ROOT"
 
 exit 0
-
